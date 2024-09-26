@@ -67,10 +67,9 @@ app.get("/GET/logs", (req, res) => {
     axios
       .get(url2)
       .then((response) => {
-        // สมมติว่า response.data.items เป็นอาเรย์ของ drone logs
+
         let data = response.data.items;
   
-        // สร้างอาเรย์เพื่อเก็บข้อมูลที่ต้องการส่งกลับ
         let logs = data.map(item => ({
           drone_id: item.drone_id,
           drone_name: item.drone_name,
@@ -79,7 +78,6 @@ app.get("/GET/logs", (req, res) => {
           celsius: item.celsius,
         }));
   
-        // ส่งข้อมูล logs กลับไป
         res.send(logs);
       })
       .catch((error) => {
