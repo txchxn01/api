@@ -43,7 +43,7 @@ app.get("/GET/configs/:id", async (req, res) => {
     };
 });
 
-app.get("/GET", (req, res) => {
+app.get("/", (req, res) => {
   axios
     .get(url)
     .then((response) => {
