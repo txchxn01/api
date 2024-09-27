@@ -11,12 +11,11 @@ const url2 =
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/GET/configs/:id", (req, res) => {
+app.get("/GET/configs/:id", async (req, res) => {
   const id = Number(req.params.id);
 
-  axios
-    .get(url)
-    .then((response) => {
+    try{
+      const response = await axios.get(url);
       const data = response.data.data;
 
       const drone = data.find((d) => d.drone_id === id);
@@ -38,11 +37,10 @@ app.get("/GET/configs/:id", (req, res) => {
         country: drone.country,
         max_speed: drone.max_speed,
       });
-    })
-    .catch((error) => {
+    }catch(error)  {
       console.error("Error fetching data:", error);
       res.status(500).send("Error fetching data");
-    });
+    };
 });
 
 app.get("/GET", (req, res) => {
@@ -63,6 +61,7 @@ app.get("/GET", (req, res) => {
       res.status(500).send("Error fetching data");
     });
 });
+
 app.get("/GET/logs", (req, res) => {
     axios
       .get(url2)
@@ -85,12 +84,13 @@ app.get("/GET/logs", (req, res) => {
         res.status(500).send("Error fetching data");
       });
   });
-app.get("/GET/status/:id", (req, res) => {
-  const id = Number(req.params.id);
-  axios
-    .get(url)
-    .then((response) => {
-      const data = response.data.data;
+
+app.get("/GET/status/:id",async (req, res) => {
+  
+  try{
+    const response =await axios.get(url);
+    const data = response.data.data;
+    const id = Number(req.params.id);
 
       const drone = data.find((d) => d.drone_id === id);
 
@@ -99,12 +99,16 @@ app.get("/GET/status/:id", (req, res) => {
       }
 
       res.send({ condition: drone.condition });
-    })
-    .catch((error) => {
+    }catch(error) {
       console.error("Error fetching data:", error);
       res.status(500).send("Error fetching data");
-    });
+    };
 });
+
+// app.post("/POST/logs ", (req,res) =>{
+//   const celsius =req.body.celsius;
+  
+// })
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
