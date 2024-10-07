@@ -105,10 +105,26 @@ app.get("/GET/status/:id",async (req, res) => {
     };
 });
 
-// app.post("/POST/logs ", (req,res) =>{
-//   const celsius =req.body.celsius;
+app.post("/POST/logs ", (req,res) =>{
+  if(!req.body.celsius){
+    res.send("please กรอกข้อมูล")
+  }
+  const celsius =req.body.celsius;
   
-// })
+  try{
+    const {data} =await axios.post(url2,{
+      celsius:celsius
+    } {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    console.log("insert complete")
+  }catch(error){
+    res.status(500).send("Error data");
+  }
+  
+})
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
