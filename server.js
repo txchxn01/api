@@ -105,7 +105,7 @@ app.get("/GET/status/:id",async (req, res) => {
     };
 });
 
-app.post("/POST/logs ", (req,res) =>{
+app.post("/POST/logs ",async (req,res) =>{
   if(!req.body.celsius){
     res.send("please กรอกข้อมูล")
   }
@@ -114,7 +114,7 @@ app.post("/POST/logs ", (req,res) =>{
   try{
     const {data} =await axios.post(url2,{
       celsius:celsius
-    } {
+    } ,{
       headers: {
         'Content-Type': 'application/json'
       }
