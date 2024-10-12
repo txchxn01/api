@@ -105,26 +105,34 @@ app.get("/GET/status/:id",async (req, res) => {
     };
 });
 
-app.post("/POST/logs ",async (req,res) =>{
-  if(!req.body.celsius){
-    res.send("please กรอกข้อมูล")
+app.post("/POST/logs", async (req, res) => {
+  // Check if celsius is present in the request body
+  if (!req.body.celsius) {
+    return res.status(400).send("Please provide the celsius value");
   }
-  const celsius =req.body.celsius;
+
+  const celsius = req.body.celsius;
   
-  try{
-    const {data} =await axios.post(url2,{
-      celsius:celsius
-    } ,{
+  try {
+    // Send the celsius value to the external URL
+    const { data } = await axios.post(url2, {
+      celsius: celsius
+    }, {
       headers: {
         'Content-Type': 'application/json'
       }
-    })
-    console.log("insert complete")
-  }catch(error){
-    res.status(500).send("Error data");
+    });
+
+    // Log and send a success response to the client
+    console.log("Insert complete");
+    res.status(200).send("Insert complete");
+  } catch (error) {
+    // Log error and send a failure response
+    console.error("Error: ", error.message);
+    res.status(500).send("Error handling the data");
   }
-  
-})
+});
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });
