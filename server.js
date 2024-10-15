@@ -11,7 +11,7 @@ const url2 =
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/GET/configs/:id", async (req, res) => {
+app.get("/configs/:id", async (req, res) => {
   const id = Number(req.params.id);
 
     try{
@@ -62,7 +62,7 @@ app.get("/", (req, res) => {
     });
 });
 
-app.get("/GET/logs", (req, res) => {
+app.get("/logs", (req, res) => {
     axios
       .get(url2)
       .then((response) => {
@@ -85,7 +85,7 @@ app.get("/GET/logs", (req, res) => {
       });
   });
 
-app.get("/GET/status/:id",async (req, res) => {
+app.get("/status/:id",async (req, res) => {
   
   try{
     const response =await axios.get(url);
@@ -105,17 +105,16 @@ app.get("/GET/status/:id",async (req, res) => {
     };
 });
 
-app.post("/POST/logs", async (req, res) => {
-  // Check if celsius is present in the request body
-  if (!req.body.celsius) {
-    return res.status(400).send("Please provide the celsius value");
-  }
+app.post("/logs", async (req, res) => {
 
-  const celsius = req.body.celsius;
+  const { celsius, drone_id, drone_name, country } = req.body;
+
+  if (!celsius || !drone_id || !drone_name || !country) {
+    return res.status(400).send("Missing required fields: celsius, drone_id, drone_name, or country");
+  }
   
   try {
-    // Send the celsius value to the external URL
-    const { data } = await axios.post(url2, {
+    const { data } = await axios.post({ celsius, drone_id, drone_name, country }, {
       celsius: celsius
     }, {
       headers: {
@@ -123,11 +122,9 @@ app.post("/POST/logs", async (req, res) => {
       }
     });
 
-    // Log and send a success response to the client
     console.log("Insert complete");
     res.status(200).send("Insert complete");
   } catch (error) {
-    // Log error and send a failure response
     console.error("Error: ", error.message);
     res.status(500).send("Error handling the data");
   }
