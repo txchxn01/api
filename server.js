@@ -14,113 +14,97 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/configs/:id", async (req, res) => {
   const id = Number(req.params.id);
 
-    try{
-      const response = await axios.get(url);
-      const data = response.data.data;
+  try {
+    const response = await axios.get(url);
+    const data = response.data.data;
 
-      const drone = data.find((d) => d.drone_id === id);
+    const drone = data.find((d) => d.drone_id === id);
 
-      if (!drone) {
-        return res.status(404).send({ error: "drone_id not found" });
-      }
+    if (!drone) {
+      return res.status(404).send({ error: "drone_id not found" });
+    }
 
-      if (drone.max_speed == null) {
-        drone.max_speed = 100;
-      } else if (drone.max_speed > 110) {
-        drone.max_speed = 110;
-      }
+    if (drone.max_speed == null) {
+      drone.max_speed = 100;
+    } else if (drone.max_speed > 110) {
+      drone.max_speed = 110;
+    }
 
-      res.send({
-        drone_id: drone.drone_id,
-        drone_name: drone.drone_name,
-        light: drone.light,
-        country: drone.country,
-        max_speed: drone.max_speed,
-      });
-    }catch(error)  {
-      console.error("Error fetching data:", error);
-      res.status(500).send("Error fetching data");
-    };
-});
-
-app.get("/", (req, res) => {
-  axios
-    .get(url)
-    .then((response) => {
-      let data = response.data.data;
-
-      if (!data.max_speed) {
-        data.max_speed = 100;
-      } else if (data.max_speed > 110) {
-        data.max_speed = 110;
-      }
-      res.send(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-      res.status(500).send("Error fetching data");
+    res.send({
+      drone_id: drone.drone_id,
+      drone_name: drone.drone_name,
+      light: drone.light,
+      country: drone.country,
+      max_speed: drone.max_speed,
     });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
 });
 
-app.get("/logs", (req, res) => {
-    axios
-      .get(url2)
-      .then((response) => {
+app.get("/logs", async (req, res) => {
+  try {
+    const response = await axios.get(url2);
+    let data = response.data.items;
 
-        let data = response.data.items;
-  
-        let logs = data.map(item => ({
-          drone_id: item.drone_id,
-          drone_name: item.drone_name,
-          created: item.created,
-          country: item.country,
-          celsius: item.celsius,
-        }));
-  
-        res.send(logs);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        res.status(500).send("Error fetching data");
-      });
-  });
+    let logs = data.map((item) => ({
+      drone_id: item.drone_id,
+      drone_name: item.drone_name,
+      created: item.created,
+      country: item.country,
+      celsius: item.celsius,
+    }));
 
-app.get("/status/:id",async (req, res) => {
-  
-  try{
-    const response =await axios.get(url);
+    res.send(logs);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
+});
+
+app.get("/status/:id", async (req, res) => {
+  try {
+    const response = await axios.get(url);
     const data = response.data.data;
     const id = Number(req.params.id);
 
-      const drone = data.find((d) => d.drone_id === id);
+    const drone = data.find((d) => d.drone_id === id);
 
-      if (!drone) {
-        return res.status(404).send({ error: "drone_id not found" });
-      }
+    if (!drone) {
+      return res.status(404).send({ error: "drone_id not found" });
+    }
 
-      res.send({ condition: drone.condition });
-    }catch(error) {
-      console.error("Error fetching data:", error);
-      res.status(500).send("Error fetching data");
-    };
+    res.send({ condition: drone.condition });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).send("Error fetching data");
+  }
 });
 
 app.post("/logs", async (req, res) => {
-
   const { celsius, drone_id, drone_name, country } = req.body;
 
   if (!celsius || !drone_id || !drone_name || !country) {
-    return res.status(400).send("Missing required fields: celsius, drone_id, drone_name, or country");
+    return res
+      .status(400)
+      .send(
+        "Missing required fields: celsius, drone_id, drone_name, or country"
+      );
   }
-  
+
   try {
-    const { data } = await axios.post({ celsius, drone_id, drone_name, country }, {
-      celsius: celsius
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
+    const { data } = await axios.post(
+      { celsius, drone_id, drone_name, country },
+      {
+        celsius: celsius,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
 
     console.log("Insert complete");
     res.status(200).send("Insert complete");
