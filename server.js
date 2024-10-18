@@ -35,7 +35,8 @@ app.get("/configs/:id", async (req, res) => {
       drone_name: drone.drone_name,
       light: drone.light,
       country: drone.country,
-      max_speed: drone.max_speed,
+      max_speed: drone.max_speed, 
+      population:drone.population
     });
   } catch (error) {
     console.error("Error fetching data:", error);
