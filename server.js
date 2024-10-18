@@ -95,10 +95,12 @@ app.post("/logs", async (req, res) => {
   }
 
   try {
-    const { data } = await axios.post(
-      { celsius, drone_id, drone_name, country },
+    const response = await axios.post(url2, 
       {
-        celsius: celsius,
+        celsius,
+        drone_id,
+        drone_name,
+        country,
       },
       {
         headers: {
@@ -114,6 +116,7 @@ app.post("/logs", async (req, res) => {
     res.status(500).send("Error handling the data");
   }
 });
+
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
